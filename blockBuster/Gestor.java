@@ -6,12 +6,16 @@ import java.util.ArrayList;
 public class Gestor {
 
     public static final String ruta = "..\\BlockBuster\\src\\blockBuster\\";
-    protected File FicheroUsuarios = new File(ruta + "FicheroUsuarios.dat");
-    protected File FicheroPeliculas = new File(ruta + "FicheroPeliculas.dat");
-    protected File FicheroVideojuegos = new File(ruta + "FicheroVideojuegos.dat");
+    protected static final String FichUsuarios = "FicheroUsuarios.dat";
+    protected static final String FichVideojuegos = "FicheroVideojuegos.dat";
+    protected static final String FichPeliculas = "FicheroPeliculas.dat";
+
+    //poner nombre de fichero como cte
+
 
     private String contrasena = "0000";
     private int identificadorUsuario = 0;
+
 
     public boolean accesoAdministrador() {
         boolean accesoValido = false;
@@ -24,38 +28,52 @@ public class Gestor {
         return accesoValido;
     }
 
-    public void gestionAdministrador() {
+    public void gestionAdministrador(App app) {
         if (accesoAdministrador()) {
             System.out.println("Bienvenido al sistema de administracion.\nIntroduzca la opcion deseada.");
-            System.out.println("1. ñanadir pelicula \n2. Añadir videojuego \n3. Añadir usuario\n4. volcar datos a otro fichero\n5. Borrar colecciones\n6. Actualizar los ficheros\n7. Consultas\n8. Ranking top 10 \n9. Salir");
 
-            int opcion = EntradaSalida.leerEnteros();
             boolean fin = false;
             while (!fin) {
+                System.out.println("1. Añadir pelicula \n2. Añadir videojuego \n3. Añadir usuario\n4. volcar datos a otro fichero\n5. Borrar colecciones\n6. Actualizar los ficheros\n7. Consultas\n8. Ranking top 10 \n9. Salir");
+
+                int opcion = EntradaSalida.leerEnteros();
                 switch (opcion) {
                     case 1:
-
+                        app.nuevaPelicula();
                         break;
                     case 2:
-                        // dar de baja un usario
+                        app.nuevoVideojuego();
                         break;
                     case 3:
-                        // volcar datos a otro fichero
+                        app.nuevoUsuario();
+                        break;
                     case 4:
-                        // borrar colecciones
+                        // volcar datos a otro fichero
+
                         break;
                     case 5:
-                        //actualizar ficheros
+                        //borrar colecciones
+                        app.borrarColecciones();
+
                         break;
                     case 6:
-                        //consultas
+                        //actualizar los ficheros
+
+                        try {
+                            escribirPeliculas(app);
+                            escribirVideojuegos(app);
+                            escribirUsuarios(app);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
                         break;
                     case 7:
-                        // ranking top 10
+                        // consultas
                         break;
 
                     case 8:
-
+                        //Ranking top 10
                         break;
 
                     case 9:
@@ -66,58 +84,62 @@ public class Gestor {
                 }
             }
         }
-
     }
 
-    public void cuentaCliente() throws InterruptedException, IOException {
-        System.out.println("introduzca su identificador: ");
-        String identificador = EntradaSalida.leerTexto();
-        // Comprobar identificador en el fichero. Si existe se accede a la consola de
 
-        ArrayList<String> usuarios = new ArrayList<>();
-
-        boolean salir = false;
-    }
+//    public void cuentaCliente() throws InterruptedException, IOException {
+//        System.out.println("introduzca su identificador: ");
+//        String identificador = EntradaSalida.leerTexto();
+//        // Comprobar identificador en el fichero. Si existe se accede a la consola de
+//
+//        ArrayList<String> usuarios = new ArrayList<>();
+//
+//        boolean salir = false;
+//    }
 
     // generar ficheros
 
     public void generarFicheroUsuarios() throws IOException {
-        File FicheroUsuarios = new File(ruta + "FicheroUsuarios.dat");
+        File FicheroUsuarios = new File(ruta + FichUsuarios);
         if (!FicheroUsuarios.exists()) {
             FicheroUsuarios.createNewFile();
         }
     }
 
     public void generarFicheroPeliculas() throws IOException {
-        File ficheroPeliculas = new File(ruta + "FicheroPeliculas.dat");
+        File ficheroPeliculas = new File(ruta + FichPeliculas);
         if (!ficheroPeliculas.exists()) {
             ficheroPeliculas.createNewFile();
         }
     }
 
     public void generarFicheroVideojuegos() throws IOException {
-        File ficheroVideojuegos = new File(ruta + "FicheroVideojuegos.dat");
+        File ficheroVideojuegos = new File(ruta+FichVideojuegos);
         if (!ficheroVideojuegos.exists()) {
             ficheroVideojuegos.createNewFile();
         }
     }
 
     //introducir contenido
+    @Deprecated
+    public void introducirContenidoFichero(App app) throws IOException {
 
-    public void introducirContenidoFichero() throws IOException {
+        File FicheroPeliculas = new File(ruta + FichUsuarios);
+        File FicheroVideojuegos = new File(ruta + FichVideojuegos);
+        File FicheroUsuarios = new File(ruta + FichVideojuegos);
         System.out.println("Que desea añadir: pelicula, videojuego o usuario");
         String seleccion = EntradaSalida.leerTexto();
 
         FileOutputStream fos = null;
-        DataOutputStream salida = null;
+        ObjectOutputStream salida = null;
 
         if (seleccion.equalsIgnoreCase("Pelicula")) {
 
             if (FicheroPeliculas.exists()) {
-                fos = new FileOutputStream(FicheroPeliculas);
-                salida = new DataOutputStream(fos);
-                System.out.println("introduca el nombre de la pelicula");
+                fos = new FileOutputStream(FicheroPeliculas, true);
+                salida = new ObjectOutputStream(fos);
 
+                salida.writeObject(app.peliculas);
 
                 salida.close();
                 fos.close();
@@ -125,17 +147,25 @@ public class Gestor {
 
         } else if (seleccion.equalsIgnoreCase("videojuego")) {
 
+            if (FicheroVideojuegos.exists()) {
+                fos = new FileOutputStream(FicheroVideojuegos);
+                salida = new ObjectOutputStream(fos);
+
+                salida.writeObject(app.videojuego);
+
+                salida.close();
+                fos.close();
+            }
+
         } else if (seleccion.equalsIgnoreCase("usuario")) {
 
             if (FicheroUsuarios.exists()) {
-                fos = new FileOutputStream(FicheroUsuarios);
-                salida = new DataOutputStream(fos);
+                fos = new FileOutputStream(FichUsuarios, true);
+                salida = new ObjectOutputStream(fos);
                 System.out.println("introduca el nombre del usuario");
                 String nombreUsuario = EntradaSalida.leerTexto();
 
-                salida.writeUTF(identificadorUsuario + ";" + nombreUsuario);
-                identificadorUsuario++;
-
+                salida.writeObject(app.usuarios);
 
                 salida.close();
                 fos.close();
@@ -145,46 +175,11 @@ public class Gestor {
             System.out.println("No se ha reconocido la opción introducida");
         }
 
-
     }
 
-
-    //Metodo para introducir peliculas en un fichero peliculas
-
-
-    //metodo para introducir videojuegos en un fichero de videojuegos
-
-    public void leerFicheroUsuarios() throws IOException {
-        //File FicheroUsuarios = new File(nombre);
-        FileInputStream fis = null;
-        DataInputStream entrada = null;
-
-        if (FicheroUsuarios.exists()) {
-            fis = new FileInputStream(FicheroUsuarios);
-            entrada = new DataInputStream(fis);
-            System.out.println(entrada.readUTF());
-            entrada.close();
-            fis.close();
-        }
-    }
 
     //leer fichero peliculas
 
-    public void mostrarContenido() {
-        System.out.println("1. mostrar peliculas 2. Mostrar Videojuegos");
-        int opcion = EntradaSalida.leerEnteros();
-
-        if (opcion == 1) {
-            while (FicheroPeliculas.canRead()) {
-                System.out.println(FicheroPeliculas);
-            }
-        } else if (opcion == 2) {
-            System.out.println(FicheroVideojuegos.toString());
-        } else {
-            System.out.println("Opción no válida");
-        }
-        // consultas
-    }
 
     public void consultas() {
         System.out.println("De que dese hacer las consultas. 1. Peliculas 2. Videojuegos 3. usuarios");
@@ -198,7 +193,7 @@ public class Gestor {
 
                     busqueda = EntradaSalida.leerTexto();
 
-                    if (FicheroPeliculas.toString().contains(busqueda)) {
+                    if (FichPeliculas.toString().contains(busqueda)) {
                         //resultado busqueda
                     } else {
                         System.out.println("No se ha encontrado nada. Quizas quiera volver a introdcir otro parametro de busqueda");
@@ -208,5 +203,113 @@ public class Gestor {
         }
     }
 
+    //lectura de ficheros
+    public ArrayList<Peliculas> leerFicheroPeliculas() throws IOException, ClassNotFoundException {
+        File FicheroPeliculas = new File(ruta + FichPeliculas);
+        FileInputStream fis = null;
+        ObjectInputStream entrada = null;
+        ArrayList<Peliculas> lista = null;
+        if (FicheroPeliculas.exists() && FicheroPeliculas.length() > 0) {
+            fis = new FileInputStream(FicheroPeliculas);
+            entrada = new ObjectInputStream(fis);
+            lista = (ArrayList<Peliculas>) entrada.readObject();
+            System.out.println(lista);
+            entrada.close();
+
+
+        }
+        return lista;
+    }
+
+    public ArrayList<Videojuegos> leerFicheroVideojuegos() throws IOException, ClassNotFoundException {
+        File FicheroVideojuegos = new File(ruta + FichVideojuegos);
+        FileInputStream fis = null;
+        ObjectInputStream entrada = null;
+        ArrayList<Videojuegos> lista = null;
+        try {
+            if (FicheroVideojuegos.exists()) {
+                fis = new FileInputStream(FicheroVideojuegos);
+                entrada = new ObjectInputStream(fis);
+                lista = (ArrayList<Videojuegos>) entrada.readObject();
+                entrada.close();
+            }
+        } catch (EOFException e) {
+            System.out.println("");
+            // System.out.println("Fichero videojuegos cargado");
+        }
+        return lista;
+    }
+
+    public ArrayList<Usuarios> leerFicheroUsuarios() throws IOException, ClassNotFoundException {
+        File FicheroUsuarios = new File(ruta + FichUsuarios);
+        FileInputStream fis = null;
+        ObjectInputStream entrada = null;
+        ArrayList<Usuarios> lista = null;
+        if (FicheroUsuarios.exists() && FicheroUsuarios.length()>0) {
+            fis = new FileInputStream(FicheroUsuarios);
+            entrada = new ObjectInputStream(fis);
+            lista = (ArrayList<Usuarios>) entrada.readObject();
+
+            entrada.close();
+        }
+
+        return lista;
+    }
+
+
+    //guardar contenido ficheros
+
+    public void escribirPeliculas(App app) throws IOException {
+        File FicheroPeliculas = new File(ruta + FichPeliculas);
+        FileOutputStream fos = null;
+        ObjectOutputStream salida = null;
+
+        if (FicheroPeliculas.exists()) {
+            fos = new FileOutputStream(FicheroPeliculas, true);
+            salida = new ObjectOutputStream(fos);
+
+            salida.writeObject(app.peliculas);
+            salida.close();
+            fos.close();
+
+        }
+    }
+
+    public void escribirVideojuegos(App app) throws IOException {
+        File FicheroVideojuegos = new File(ruta + FichVideojuegos);
+        FileOutputStream fos = null;
+        ObjectOutputStream salida = null;
+
+        if (FicheroVideojuegos.exists()) {
+            fos = new FileOutputStream(FichVideojuegos,true);
+            salida = new ObjectOutputStream(fos);
+//escribir un fichero de texto,
+          /*  for (int i = 0; i < app.videojuego.size(); i++) {
+                salida.writeObject(app.videojuego + System.lineSeparator());
+            }
+*/
+
+            salida.writeObject(app.videojuego);
+            salida.close();
+            fos.close();
+
+        }
+    }
+
+    public void escribirUsuarios(App app) throws IOException {
+        File FicheroUsuarios = new File(ruta + FichUsuarios);
+        FileOutputStream fos = null;
+        ObjectOutputStream salida = null;
+
+        if (FicheroUsuarios.exists()) {
+            fos = new FileOutputStream(FicheroUsuarios, true);
+            salida = new ObjectOutputStream(fos);
+
+            salida.writeObject(app.usuarios);
+            salida.close();
+            fos.close();
+
+        }
+    }
 
 }
