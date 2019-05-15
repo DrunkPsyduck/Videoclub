@@ -3,6 +3,7 @@ package blockBuster;
 import java.io.Serializable;
 
 public class Videojuegos extends Alquiler{
+    private static final long serialVersionUID = 40L;
 
 
     private String clasificacionEdad;
@@ -13,6 +14,30 @@ public class Videojuegos extends Alquiler{
         super(identificador, genero, precioAlquiler, titulo);
         this.clasificacionEdad = clasificacionEdad;
         this.multijugador = multijugador;
+        this.plataforma = plataforma;
+    }
+
+    public String getClasificacionEdad() {
+        return clasificacionEdad;
+    }
+
+    public void setClasificacionEdad(String clasificacionEdad) {
+        this.clasificacionEdad = clasificacionEdad;
+    }
+
+    public String getMultijugador() {
+        return multijugador;
+    }
+
+    public void setMultijugador(String multijugador) {
+        this.multijugador = multijugador;
+    }
+
+    public String getPlataforma() {
+        return plataforma;
+    }
+
+    public void setPlataforma(String plataforma) {
         this.plataforma = plataforma;
     }
 

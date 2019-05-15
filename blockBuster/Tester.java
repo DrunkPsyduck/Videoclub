@@ -7,52 +7,34 @@ import java.io.StreamCorruptedException;
 import java.util.InputMismatchException;
 
 public class Tester {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Gestor gestor = new Gestor();
         App app = null;
         //Primera ejecución tras cargar en RAM películas, videojuegos, usuarios, escribir los ficheros
+
 
         boolean cargadoPeliculas = false;
         boolean cargadoVideojuegos = false;
         boolean cargadoUsuarios = false;
 
 
-//        try {
-//            gestor.generarFicheroPeliculas();
-//            gestor.generarFicheroVideojuegos();
-//            gestor.generarFicheroUsuarios();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-
         try {
-            if (gestor.leerFicheroPeliculas() != null) {
+            if (gestor.leerFicheroUsuarios() == null) {
+                gestor.generarFicheroUsuarios();
+            } else {
+                cargadoUsuarios = true;
+            }
+            if (gestor.leerFicheroPeliculas() == null) {
+                gestor.generarFicheroPeliculas();
+            } else {
                 cargadoPeliculas = true;
             }
-        } catch (IOException e) {
-            System.out.println(e.getStackTrace().toString());
-            System.out.println(e.getMessage());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            if (gestor.leerFicheroVideojuegos() != null)
+            if (gestor.leerFicheroVideojuegos() == null) {
+                gestor.generarFicheroVideojuegos();
+            } else {
                 cargadoVideojuegos = true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            if (gestor.leerFicheroUsuarios() != null)
-                cargadoUsuarios = true;
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        } catch (ClassNotFoundException e) {
+            }
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
 
@@ -61,19 +43,13 @@ public class Tester {
         if (cargadoPeliculas && cargadoVideojuegos && cargadoUsuarios) {
             try {
                 app = new App(gestor.leerFicheroPeliculas(), gestor.leerFicheroVideojuegos(), gestor.leerFicheroUsuarios());
-                System.out.println(app.peliculas);
+
             } catch (ClassNotFoundException | IOException e) {
                 e.getMessage();
             }
         } else {
             app = new App();
         }
-        //Segunda ejecución: esto
-        /*try {
-            app = new App(gestor.leerFicheroPeliculas(), gestor.leerFicheroVideojuegos(), gestor.leerFicheroUsuarios());
-        } catch (ClassNotFoundException | IOException e) {
-            e.getMessage();
-        }*/
 
         boolean salir = false;
 
@@ -108,19 +84,11 @@ public class Tester {
                 case 6:
                     //copiar a fichero
                     try {
-
-                        gestor.escribirPeliculas(app);
-                        gestor.escribirVideojuegos(app);
-                        gestor.escribirUsuarios(app);
-                        System.out.println("Datos copiados");
+                        gestor.guardarFicheros(app);
                         ficheroGuardado = true;
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
-
-                    ficherosGuardados = true;
-
                     break;
 
                 case 7:
@@ -130,19 +98,12 @@ public class Tester {
 
                     if (!ficheroGuardado) {
                         try {
-
-                            gestor.escribirPeliculas(app);
-                            //gestor.escribirVideojuegos(app);
-                            //gestor.escribirUsuarios(app);
-                            System.out.println("Datos copiados");
-
+                            gestor.guardarFicheros(app);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
-
                     salir = true;
-
                     System.out.println("Vuelva pronto");
                     break;
                 default:

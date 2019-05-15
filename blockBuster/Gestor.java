@@ -2,6 +2,7 @@ package blockBuster;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Gestor {
 
@@ -13,8 +14,7 @@ public class Gestor {
     //poner nombre de fichero como cte
 
 
-    private String contrasena = "0000";
-    private int identificadorUsuario = 0;
+    private static final String contrasena = "0000";
 
 
     public boolean accesoAdministrador() {
@@ -28,7 +28,7 @@ public class Gestor {
         return accesoValido;
     }
 
-    public void gestionAdministrador(App app) {
+    public void gestionAdministrador(App app) throws IOException {
         if (accesoAdministrador()) {
             System.out.println("Bienvenido al sistema de administracion.\nIntroduzca la opcion deseada.");
 
@@ -57,25 +57,16 @@ public class Gestor {
 
                         break;
                     case 6:
-                        //actualizar los ficheros
-
-                        try {
-                            escribirPeliculas(app);
-                            escribirVideojuegos(app);
-                            escribirUsuarios(app);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
+                        guardarFicheros(app);
                         break;
                     case 7:
                         // consultas
+                        consultasPeliculas(app);
                         break;
-
                     case 8:
                         //Ranking top 10
+                        Gestor.ranking(app);
                         break;
-
                     case 9:
                         fin = true;
                         break;
@@ -114,94 +105,89 @@ public class Gestor {
     }
 
     public void generarFicheroVideojuegos() throws IOException {
-        File ficheroVideojuegos = new File(ruta+FichVideojuegos);
+        File ficheroVideojuegos = new File(ruta + FichVideojuegos);
         if (!ficheroVideojuegos.exists()) {
             ficheroVideojuegos.createNewFile();
         }
     }
 
     //introducir contenido
-    @Deprecated
-    public void introducirContenidoFichero(App app) throws IOException {
-
-        File FicheroPeliculas = new File(ruta + FichUsuarios);
-        File FicheroVideojuegos = new File(ruta + FichVideojuegos);
-        File FicheroUsuarios = new File(ruta + FichVideojuegos);
-        System.out.println("Que desea añadir: pelicula, videojuego o usuario");
-        String seleccion = EntradaSalida.leerTexto();
-
-        FileOutputStream fos = null;
-        ObjectOutputStream salida = null;
-
-        if (seleccion.equalsIgnoreCase("Pelicula")) {
-
-            if (FicheroPeliculas.exists()) {
-                fos = new FileOutputStream(FicheroPeliculas, true);
-                salida = new ObjectOutputStream(fos);
-
-                salida.writeObject(app.peliculas);
-
-                salida.close();
-                fos.close();
-            }
-
-        } else if (seleccion.equalsIgnoreCase("videojuego")) {
-
-            if (FicheroVideojuegos.exists()) {
-                fos = new FileOutputStream(FicheroVideojuegos);
-                salida = new ObjectOutputStream(fos);
-
-                salida.writeObject(app.videojuego);
-
-                salida.close();
-                fos.close();
-            }
-
-        } else if (seleccion.equalsIgnoreCase("usuario")) {
-
-            if (FicheroUsuarios.exists()) {
-                fos = new FileOutputStream(FichUsuarios, true);
-                salida = new ObjectOutputStream(fos);
-                System.out.println("introduca el nombre del usuario");
-                String nombreUsuario = EntradaSalida.leerTexto();
-
-                salida.writeObject(app.usuarios);
-
-                salida.close();
-                fos.close();
-            }
-
-        } else {
-            System.out.println("No se ha reconocido la opción introducida");
-        }
-
-    }
+//    @Deprecated
+//    public void introducirContenidoFichero(App app) throws IOException {
+//
+//        File FicheroPeliculas = new File(ruta + FichUsuarios);
+//        File FicheroVideojuegos = new File(ruta + FichVideojuegos);
+//        File FicheroUsuarios = new File(ruta + FichVideojuegos);
+//        System.out.println("Que desea añadir: pelicula, videojuego o usuario");
+//        String seleccion = EntradaSalida.leerTexto();
+//
+//        FileOutputStream fos = null;
+//        ObjectOutputStream salida = null;
+//
+//        if (seleccion.equalsIgnoreCase("Pelicula")) {
+//
+//            if (FicheroPeliculas.exists()) {
+//                fos = new FileOutputStream(FicheroPeliculas, true);
+//                salida = new ObjectOutputStream(fos);
+//
+//                salida.writeObject(app.peliculas);
+//
+//                salida.close();
+//                fos.close();
+//            }
+//
+//        } else if (seleccion.equalsIgnoreCase("videojuego")) {
+//
+//            if (FicheroVideojuegos.exists()) {
+//                fos = new FileOutputStream(FicheroVideojuegos);
+//                salida = new ObjectOutputStream(fos);
+//
+//                salida.writeObject(app.videojuego);
+//
+//                salida.close();
+//                fos.close();
+//            }
+//
+//        } else if (seleccion.equalsIgnoreCase("usuario")) {
+//
+//            if (FicheroUsuarios.exists()) {
+//                fos = new FileOutputStream(FichUsuarios, true);
+//                salida = new ObjectOutputStream(fos);
+//                System.out.println("introduca el nombre del usuario");
+//                String nombreUsuario = EntradaSalida.leerTexto();
+//
+//                salida.writeObject(app.usuarios);
+//
+//                salida.close();
+//                fos.close();
+//            }
+//
+//        } else {
+//            System.out.println("No se ha reconocido la opción introducida");
+//        }
+//
+//    }
 
 
     //leer fichero peliculas
 
 
-    public void consultas() {
-        System.out.println("De que dese hacer las consultas. 1. Peliculas 2. Videojuegos 3. usuarios");
-        int opcion = EntradaSalida.leerEnteros();
-        String busqueda = "";
-        switch (opcion) {
-            case 1:
+   public void consultasPeliculas(App app){
 
-                while (!busqueda.equalsIgnoreCase("salir")) {
-                    System.out.println("Introduzca su busqueda. Introduzca salir para volver al ménu");
+        System.out.println("Parametro de la pelicula por la que desea hacer la busqueda");
+        String parametro = EntradaSalida.leerTexto();
 
-                    busqueda = EntradaSalida.leerTexto();
-
-                    if (FichPeliculas.toString().contains(busqueda)) {
-                        //resultado busqueda
-                    } else {
-                        System.out.println("No se ha encontrado nada. Quizas quiera volver a introdcir otro parametro de busqueda");
-
-                    }
-                }
+        for (int i = 0; i < app.peliculas.size(); i++) {
+            if (app.peliculas.get(i).titulo.equalsIgnoreCase(parametro)){
+                System.out.println(app.peliculas.get(i));
+            }
         }
+
     }
+
+    // consultas videojuegos
+
+    //consultas usuarios
 
     //lectura de ficheros
     public ArrayList<Peliculas> leerFicheroPeliculas() throws IOException, ClassNotFoundException {
@@ -213,7 +199,7 @@ public class Gestor {
             fis = new FileInputStream(FicheroPeliculas);
             entrada = new ObjectInputStream(fis);
             lista = (ArrayList<Peliculas>) entrada.readObject();
-            System.out.println(lista);
+            // System.out.println(lista);
             entrada.close();
 
 
@@ -245,7 +231,7 @@ public class Gestor {
         FileInputStream fis = null;
         ObjectInputStream entrada = null;
         ArrayList<Usuarios> lista = null;
-        if (FicheroUsuarios.exists() && FicheroUsuarios.length()>0) {
+        if (FicheroUsuarios.exists() && FicheroUsuarios.length() > 0) {
             fis = new FileInputStream(FicheroUsuarios);
             entrada = new ObjectInputStream(fis);
             lista = (ArrayList<Usuarios>) entrada.readObject();
@@ -281,14 +267,13 @@ public class Gestor {
         ObjectOutputStream salida = null;
 
         if (FicheroVideojuegos.exists()) {
-            fos = new FileOutputStream(FichVideojuegos,true);
+            fos = new FileOutputStream(FicheroVideojuegos, true);
             salida = new ObjectOutputStream(fos);
 //escribir un fichero de texto,
           /*  for (int i = 0; i < app.videojuego.size(); i++) {
                 salida.writeObject(app.videojuego + System.lineSeparator());
             }
 */
-
             salida.writeObject(app.videojuego);
             salida.close();
             fos.close();
@@ -312,4 +297,25 @@ public class Gestor {
         }
     }
 
+    public void guardarFicheros(App app) throws IOException {
+
+        escribirUsuarios(app);
+        escribirVideojuegos(app);
+        escribirPeliculas(app);
+        System.out.println("Datos copiados");
+
+    }
+
+    public static void ranking(App app) {
+
+        Usuarios temporal;
+
+        System.out.println("Mostrar top 10 ");
+
+        Collections.sort(app.usuarios);
+
+        for (int i = 0; i < app.usuarios.size() ; i++) { // <=10 si existen 10 usuarios
+            System.out.println(App.ANSI_BLUE + app.usuarios.get(i) + App.ANSI_RESET);
+        }
+    }
 }

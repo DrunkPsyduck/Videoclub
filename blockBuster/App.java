@@ -131,10 +131,10 @@ public class App {
     public void mostrarContenidoVideojuegos() {
 
         if (videojuego.isEmpty()) {
-            System.out.println("NO existe ningun registro");
+            System.out.println("No existe ningun registro");
         } else {
             for (int i = 0; i < videojuego.size(); i++) {
-                System.out.println(videojuego.get(i));
+                System.out.println(ANSI_BLUE + videojuego.get(i) + ANSI_RESET);
             }
         }
         System.out.println("Fin del fichero");
@@ -143,10 +143,10 @@ public class App {
     public void mostrarUsuarios() {
         if (!usuarios.isEmpty()) {
             for (int i = 0; i < usuarios.size(); i++) {
-                System.out.println(usuarios.get(i));
+                System.out.println(ANSI_BLUE + usuarios.get(i) + ANSI_RESET);
             }
         } else {
-            System.out.println("No hay usuarios");
+            System.out.println("No existe ningun usuario");
         }
     }
     public void borrarColecciones(){

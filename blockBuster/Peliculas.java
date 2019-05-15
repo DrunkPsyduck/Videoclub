@@ -3,7 +3,7 @@ package blockBuster;
 import java.io.IOException;
 
 public class Peliculas extends Alquiler {
-
+    private static final long serialVersionUID = 41L;
 
     private int anio;
     private int duracion;
@@ -18,6 +18,38 @@ public class Peliculas extends Alquiler {
         this. paisOrigen = paisOrigen;
     }
 
+
+    public int getAnio() {
+        return anio;
+    }
+
+    public void setAnio(int anio) {
+        this.anio = anio;
+    }
+
+    public int getDuracion() {
+        return duracion;
+    }
+
+    public void setDuracion(int duracion) {
+        this.duracion = duracion;
+    }
+
+    public String getDirector() {
+        return director;
+    }
+
+    public void setDirector(String director) {
+        this.director = director;
+    }
+
+    public String getPaisOrigen() {
+        return paisOrigen;
+    }
+
+    public void setPaisOrigen(String paisOrigen) {
+        this.paisOrigen = paisOrigen;
+    }
 
     @Override
     public String toString() {
@@ -39,106 +71,5 @@ public class Peliculas extends Alquiler {
 //        return sb.toString();
 //    }
 
-    public static class TesterGema {
-        public static void main(String[] args) {
-            Gestor gestor = new Gestor();
-            App app = null;
-            //app = new App();
-            //Primera ejecución tras cargar en RAM películas, videojuegos, usuarios, escribir los ficheros
 
-
-    //        try {
-    //            gestor.generarFicheroPeliculas();
-    //            gestor.generarFicheroVideojuegos();
-    //            gestor.generarFicheroUsuarios();
-    //        } catch (IOException e) {
-    //            e.printStackTrace();
-    //        }
-
-
-            try {
-                    app = new App(gestor.leerFicheroPeliculas(), gestor.leerFicheroVideojuegos(), gestor.leerFicheroUsuarios());
-                    System.out.println(app.peliculas);
-                } catch (ClassNotFoundException | IOException e) {
-                    e.getMessage();
-                }
-
-
-
-            boolean salir = false;
-
-            while (!salir) {
-                boolean guardado = false;
-                System.out.println("Seleccione una opcion.\n1. Mostrar catalogo\n2. Para administradores \n3. Mostrar alquileres \n4. Dar alta usuarios\n5. Mostrar usuarios\n6. Guardar datos introducidos\n99. Salir");
-                System.out.print("> ");
-                int opciones = EntradaSalida.leerEnteros();
-                boolean ficherosGuardados = false;
-                switch (opciones) {
-                    case 1:
-                        //
-                        app.selector();
-
-                        break;
-                    case 2:
-                        gestor.gestionAdministrador(app);
-                        break;
-                    case 3:
-
-                        app.mostrarContenidoPeliculas();
-                        break;
-                    case 4:
-                        app.nuevoUsuario();
-                        app.mostrarUsuarios();
-                        break;
-
-                    case 5:
-                        app.mostrarUsuarios();
-
-                        break;
-                    case 6:
-                        //copiar a fichero
-                        try {
-
-                            gestor.escribirPeliculas(app);
-                            gestor.escribirVideojuegos(app);
-                            gestor.escribirUsuarios(app);
-                            System.out.println("Datos copiados");
-
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-
-                        ficherosGuardados = true;
-
-                        break;
-
-                    case 7:
-
-                        break;
-                    case 99:
-
-                            try {
-
-                                gestor.escribirPeliculas(app);
-                                //gestor.escribirVideojuegos(app);
-                                //gestor.escribirUsuarios(app);
-                                System.out.println("Datos copiados");
-
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                        salir = true;
-
-                        System.out.println("Vuelva pronto");
-                        break;
-                    default:
-                        System.out.println("No valido");
-                        break;
-                }
-
-            }
-        }
-    }
 }
